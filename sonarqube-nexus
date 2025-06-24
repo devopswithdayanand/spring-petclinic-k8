@@ -92,3 +92,5 @@ WantedBy=multi-user.target
 > cd spring-petclinic/
 > nano pom.xml 
 > mvn deploy -Dcheckstyle.skip=true
+
+demo
