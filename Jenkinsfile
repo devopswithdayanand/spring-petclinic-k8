@@ -1,23 +1,67 @@
 pipeline {
     agent any
+    parameters {
+        string(name: 'phase1', defaultValue: 'clean test', description: 'mvn phase')
+        string(name: 'phase2', defaultValue: 'package', description: 'mvn phase')
+    }
 
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/devopswithdayanand/spring-petclinic-k8.git'
+                checkout scm
             }
         }
-        
-        stage('Test') {
+        stage('Testing') {
             steps {
-                sh 'mvn clean test'
+                sh "mvn ${params.phase1}"
             }
         }
-        
         stage('Package') {
             steps {
-                sh 'mvn clean package -DSkiptests'
+                sh "mvn ${params.phase2}"
             }
+        }
+    }
+    post {
+        success {
+            mail bcc: '', 
+                 body: """Hi Team,
+
+            Job Name: ${env.JOB_NAME}
+            Build Number: ${env.BUILD_NUMBER}
+            Status: SUCCESS
+            Branch: ${env.GIT_BRANCH}
+            Commit: ${env.GIT_COMMIT}
+            
+            Logs: ${env.BUILD_URL}console
+            Artifacts: ${env.BUILD_URL}artifact/
+            
+            Regards,
+            Jenkins
+            """, 
+             cc: '', from: '', replyTo: '', 
+             subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - success", 
+             to: 'devopswithdayanand@gmail.com'
+        }
+        failure {
+            mail bcc: '', 
+                 body: """Hi Team,
+
+                Job Name: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                Status: FAILED
+                Branch: ${env.GIT_BRANCH}
+                Commit: ${env.GIT_COMMIT}
+                
+                Logs: ${env.BUILD_URL}console
+                Artifacts: ${env.BUILD_URL}artifact/
+                
+                Regards,
+                Jenkins
+                """, 
+                 cc: '', from: '', replyTo: '', 
+                 subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - failed", 
+                 to: 'devopswithdayanand@gmail.com'
         }
     }
 }
