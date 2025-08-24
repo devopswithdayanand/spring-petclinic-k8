@@ -34,7 +34,7 @@ pipeline {
             Commit: ${env.GIT_COMMIT}
             
             Logs: ${env.BUILD_URL}console
-            Artifacts: ${env.BUILD_URL}artifact/
+            Artifacts: ${env.BUILD_URL}target/
             
             Regards,
             Jenkins
