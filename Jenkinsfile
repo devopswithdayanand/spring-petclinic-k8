@@ -43,6 +43,12 @@ pipeline {
                 sh "docker build -t devopswithdayanand/neeraj:p1 ."
             }
         }
+
+        stage('Docker image push') {
+            steps {
+                sh "docker push devopswithdayanand/neeraj:p1"
+            }
+        }
     }
     post {
         success {
