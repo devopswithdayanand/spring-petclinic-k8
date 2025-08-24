@@ -3,10 +3,12 @@ pipeline {
     parameters {
         string(name: 'phase1', defaultValue: 'clean test', description: 'mvn phase')
         string(name: 'phase2', defaultValue: 'package', description: 'mvn phase')
+        string(name: 'version', defaultValue: '3.4.0-SNAPSHOT', description: 'snap version')
     }
     environment {
         ARTIFACT_ID = "spring-petclinic"
-        IMAGE_TAG = "p1"
+        SNAP_VERSION = "${params.version}"
+        IMAGE_TAG = "$SNAP_VERSION"
         IMAGE_NAME = "devopswithdayanand/neeraj"
     }
 
