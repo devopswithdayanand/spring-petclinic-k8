@@ -16,7 +16,7 @@ pipeline {
                 sh "mvn ${params.phase1}"
             }
         }
-        stage('Testing') {
+        stage('Sonar Scan') {
             steps {
                 withSonarQubeEnv(credentialsId: 'sonar-cred') {
                     sh "mvn sonar:sonar"
