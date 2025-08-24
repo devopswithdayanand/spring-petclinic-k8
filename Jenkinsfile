@@ -19,6 +19,7 @@ pipeline {
         stage('Package') {
             steps {
                 sh "mvn ${params.phase2}"
+                archiveArtifacts artifacts: "target/*.jar", fingerprint: true
             }
         }
     }
@@ -34,7 +35,7 @@ pipeline {
             Commit: ${env.GIT_COMMIT}
             
             Logs: ${env.BUILD_URL}console
-            Artifacts: ${env.BUILD_URL}target/
+            Artifacts: ${env.BUILD_URL}artifact/
             
             Regards,
             Jenkins
@@ -54,7 +55,7 @@ pipeline {
                 Commit: ${env.GIT_COMMIT}
                 
                 Logs: ${env.BUILD_URL}console
-                Artifacts: ${env.BUILD_URL}target/
+                Artifacts: ${env.BUILD_URL}artifact/
                 
                 Regards,
                 Jenkins
