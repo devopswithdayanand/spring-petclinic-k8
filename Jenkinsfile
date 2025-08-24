@@ -38,6 +38,11 @@ pipeline {
                                                     repository: 'spring', version: '3.4.0-SNAPSHOT'
             }
         }
+        stage('Docker image build') {
+            steps {
+                sh "docker build -t devopswithdayanand/neeraj:p1 ."
+            }
+        }
     }
     post {
         success {
