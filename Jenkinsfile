@@ -4,6 +4,11 @@ pipeline {
         string(name: 'phase1', defaultValue: 'clean test', description: 'mvn phase')
         string(name: 'phase2', defaultValue: 'package', description: 'mvn phase')
     }
+    environment {
+        ARTIFACT_ID = "spring-petclinic"
+        IMAGE_TAG = "p1"
+        IMAGE_NAME = "devopswithdayanand/neeraj"
+    }
 
     stages {
         stage('Git Checkout') {
@@ -31,7 +36,7 @@ pipeline {
         }
         stage('Nexus Upload') {
             steps {
-                nexusArtifactUploader artifacts: [[artifactId: 'spring-petclinic', 
+                nexusArtifactUploader artifacts: [[artifactId: "$ARTIFACT_ID", 
                                                    classifier: '', file: 'target/spring-petclinic-3.4.0-SNAPSHOT.jar', type: 'jar']], 
                                                     credentialsId: 'neuxs-cred', groupId: 'org.springframework.samples', 
                                                     nexusUrl: '172.31.39.210:8081', nexusVersion: 'nexus3', protocol: 'http', 
@@ -40,13 +45,13 @@ pipeline {
         }
         stage('Docker image build') {
             steps {
-                sh "docker build -t devopswithdayanand/neeraj:p1 ."
+                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
             }
         }
 
         stage('Docker image push') {
             steps {
-                sh "docker push devopswithdayanand/neeraj:p1"
+                sh "docker push $IMAGE_NAME:$IMAGE_TAG"
             }
         }
     }
