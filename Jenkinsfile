@@ -29,7 +29,7 @@ pipeline {
 
             Job Name: ${env.JOB_NAME}
             Build Number: ${env.BUILD_NUMBER}
-            Status: ${env.BUILD_STATUS}
+            Status: ${BUILD_STATUS}
             Branch: ${env.GIT_BRANCH}
             Commit: ${env.GIT_COMMIT}
             
@@ -40,7 +40,7 @@ pipeline {
             Jenkins
             """, 
              cc: '', from: '', replyTo: '', 
-             subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${env.BUILD_STATUS}", 
+             subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${BUILD_STATUS}", 
              to: 'devopswithdayanand@gmail.com'
         }
         failure {
@@ -60,7 +60,7 @@ pipeline {
                 Jenkins
                 """, 
                  cc: '', from: '', replyTo: '', 
-                 subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${env.BUILD_STATUS}", 
+                 subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - ${BUILD_STATUS}", 
                  to: 'devopswithdayanand@gmail.com'
         }
     }
