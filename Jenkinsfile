@@ -56,6 +56,12 @@ pipeline {
                 sh "docker push $IMAGE_NAME:$IMAGE_TAG"
             }
         }
+
+        stage('Kube deploy') {
+            steps {
+                sh "helm upgrade -i petclinic ./petclinic-helm "
+            }
+        }
     }
     post {
         success {
