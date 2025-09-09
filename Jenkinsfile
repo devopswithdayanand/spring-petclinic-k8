@@ -65,7 +65,7 @@ pipeline {
             """, 
              cc: '', from: '', replyTo: '', 
              subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Success", 
-             to: 'devopswithdayanand@gmail.com'
+             to: 'tesemob395@certve.com'
         }
         failure {
             mail bcc: '', 
@@ -85,7 +85,7 @@ pipeline {
                 """, 
                  cc: '', from: '', replyTo: '', 
                  subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Failed", 
-                 to: 'devopswithdayanand@gmail.com'
+                 to: 'tesemob395@certve.com'
         }
     }
 }
