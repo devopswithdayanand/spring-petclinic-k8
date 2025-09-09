@@ -13,6 +13,21 @@ pipeline {
     }
 
     stages {
+        stage('notify') {
+            steps {
+                mail bcc: '', 
+                 body: """Hi Team,
+
+            Job Name: ${env.JOB_NAME}
+            
+            Regards,
+            Jenkins
+            """, 
+             cc: '', from: '', replyTo: '', 
+             subject: "[Jenkins] ${env.JOB_NAME} is started", 
+             to: 'tesemob395@certve.com'
+            }
+        }
         stage('Git Checkout') {
             steps {
                 checkout scm
@@ -47,19 +62,6 @@ pipeline {
         }
     }
     post {
-        started {
-            mail bcc: '', 
-                 body: """Hi Team,
-
-            Job Name: ${env.JOB_NAME}
-            
-            Regards,
-            Jenkins
-            """, 
-             cc: '', from: '', replyTo: '', 
-             subject: "[Jenkins] ${env.JOB_NAME} is started", 
-             to: 'tesemob395@certve.com'
-        }
         success {
             mail bcc: '', 
                  body: """Hi Team,
