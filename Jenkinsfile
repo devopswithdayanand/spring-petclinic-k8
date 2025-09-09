@@ -42,24 +42,7 @@ pipeline {
                                                    classifier: '', file: 'target/spring-petclinic-3.4.0-SNAPSHOT.jar', type: 'jar']], 
                                                     credentialsId: 'neuxs-cred', groupId: 'org.springframework.samples', 
                                                     nexusUrl: '172.31.39.210:8081', nexusVersion: 'nexus3', protocol: 'http', 
-                                                    repository: 'spring', version: '3.4.0-SNAPSHOT'
-            }
-        }
-        stage('Docker image build') {
-            steps {
-                sh "docker build -t $IMAGE_NAME:$IMAGE_TAG ."
-            }
-        }
-
-        stage('Docker image push') {
-            steps {
-                sh "docker push $IMAGE_NAME:$IMAGE_TAG"
-            }
-        }
-
-        stage('Kube deploy') {
-            steps {
-                sh "helm upgrade -i petclinic ./petclinic-helm "
+                                                    repository: 'spring-petclinic', version: '3.4.0-SNAPSHOT'
             }
         }
     }
