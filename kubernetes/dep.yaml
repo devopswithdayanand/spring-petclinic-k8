@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: petclinic
-        image: devopswithdayanand/e2-petclinic:3.4.0-SNAPSHOT
+        image: devopswithdayanand/spring-pet-project-m2:3.4.0-SNAPSHOT
         ports:
         - containerPort: 8080
