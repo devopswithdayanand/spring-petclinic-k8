@@ -1,0 +1,12 @@
+FROM maven:3.8.5-openjdk-17 AS build
+WORKDIR /app
+COPY ./spring-petclinic-k8/src /app/src
+COPY ./spring-petclinic-k8/pom.xml /app/pom.xml
+RUN mvn package 
+RUN mv ./target/*.jar /app/petclinic.jar
+
+FROM openjdk:25-ea-17-jdk
+WORKDIR /demo
+COPY --from=build /app/petclinic.jar  /demo/petclinic.jar
+CMD java -jar /demo/petclinic.jar
+EXPOSE 8080

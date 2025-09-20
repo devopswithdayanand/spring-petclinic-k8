@@ -1,0 +1,61 @@
+# Stage 1: build
+FROM maven:3.8.5-openjdk-17 AS build
+
+LABEL org.opencontainers.image.authors="you@example.com" \
+      org.opencontainers.image.base.name="maven:3.8.5-openjdk-17" \
+      org.opencontainers.image.title="spring-petclinic"
+
+WORKDIR /app
+
+# Copy only pom first to leverage layer caching for dependencies
+COPY ./spring-petclinic-k8/pom.xml ./ 
+
+# If you have a settings.xml or parent poms, copy them too:
+# COPY settings.xml /root/.m2/settings.xml
+
+# Resolve dependencies (go-offline) to cache them
+RUN mvn -B dependency:go-offline
+
+# Copy source and build
+COPY ./spring-petclinic-k8/src ./src
+
+
+# Build jar (change skipTests as needed)
+RUN mvn -B -DskipTests=true clean package
+
+# Find jar and copy to fixed location for next stage
+RUN JAR=$(ls target/*.jar | head -n1) && echo "JAR=$JAR" && cp "$JAR" /app/app.jar
+
+# Stage 2: runtime (use a slim, stable JRE)
+FROM eclipse-temurin:17-jre-jammy
+
+LABEL org.opencontainers.image.authors="you@example.com" \
+      org.opencontainers.image.base.name="eclipse-temurin:17-jre-jammy"
+
+# Create non-root user
+ARG APP_USER=petclinic
+ARG APP_UID=1000
+RUN useradd -u ${APP_UID} -m -s /bin/bash ${APP_USER} || true
+
+WORKDIR /demo
+
+# Copy jar (single known name)
+COPY --from=build /app/app.jar /demo/app.jar
+
+# Create log/config dirs and set ownership
+RUN mkdir -p /demo/logs /demo/config && chown -R ${APP_USER}:${APP_USER} /demo
+
+USER ${APP_USER}
+
+EXPOSE 8080
+
+ENV JAVA_OPTS="-Xms256m -Xmx512m" \
+    SPRING_PROFILES_ACTIVE="default" \
+    TZ="UTC"
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl --fail http://localhost:8080/actuator/health || exit 1
+
+# Use exec form so signals are forwarded correctly
+ENTRYPOINT ["java","-jar","/demo/app.jar"]
+CMD []
