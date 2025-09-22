@@ -8,8 +8,7 @@ pipeline {
     environment {
         ARTIFACT_ID = "spring-petclinic"
         SNAP_VERSION = "${params.version}"
-        IMAGE_TAG = "$SNAP_VERSION"
-        IMAGE_NAME = "devopswithdayanand/neeraj"
+        IMAGE_NAME = "devopswithdayanand/spring-pet-project-m2:$SNAP_VERSION"
     }
 
     stages {
@@ -25,7 +24,7 @@ pipeline {
             """, 
              cc: '', from: '', replyTo: '', 
              subject: "[Jenkins] ${env.JOB_NAME} is started", 
-             to: 'tesemob395@certve.com'
+             to: 'sewin21172@anysilo.com'
             }
         }
         stage('Git Checkout') {
@@ -40,8 +39,8 @@ pipeline {
         }
         stage('Sonar Scan') {
             steps {
-                withSonarQubeEnv(installationName:'sonarqube', credentialsId: 'sonar-cred') {
-                    sh "mvn sonar:sonar"
+                withSonarQubeEnv(installationName: 'sonarqube', credentialsId: 'sonar-cred') {
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
@@ -53,11 +52,30 @@ pipeline {
         }
         stage('Nexus Upload') {
             steps {
-                nexusArtifactUploader artifacts: [[artifactId: "$ARTIFACT_ID", 
-                                                   classifier: '', file: 'target/spring-petclinic-3.4.0-SNAPSHOT.jar', type: 'jar']], 
-                                                    credentialsId: 'neuxs-cred', groupId: 'org.springframework.samples', 
-                                                    nexusUrl: '172.31.39.210:8081', nexusVersion: 'nexus3', protocol: 'http', 
-                                                    repository: 'spring-petclinic', version: '3.4.0-SNAPSHOT'
+                nexusArtifactUploader artifacts: [[artifactId: 'spring-petclinic', 
+                    classifier: '', file: 'target/spring-petclinic-3.4.0-SNAPSHOT.jar', 
+                    type: 'jar']], credentialsId: 'Nexus_cred', groupId: 'org.springframework.samples', 
+                    nexusUrl: '172.31.39.206:8081', nexusVersion: 'nexus3', 
+                    protocol: 'http', repository: 'spring-petclinic', version: "$SNAP_VERSION"
+            }
+        }
+
+        stage('Docker Image Build') {
+            steps {
+                sh "docker build -t $IMAGE_NAME ."
+            }
+        }
+        
+        stage('Docker Image Push') {
+            steps {
+                sh "docker push $IMAGE_NAME"
+            }
+        }
+        
+        stage('deply to eks') {
+            steps {
+                sh "aws eks --region ap-northeast-1 update-kubeconfig --name demo-cluster"
+                sh "helm upgrade --install petclinic ./petclinic-helm"
             }
         }
     }
@@ -80,7 +98,7 @@ pipeline {
             """, 
              cc: '', from: '', replyTo: '', 
              subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Success", 
-             to: 'tesemob395@certve.com'
+             to: 'sewin21172@anysilo.com'
         }
         failure {
             mail bcc: '', 
@@ -100,7 +118,7 @@ pipeline {
                 """, 
                  cc: '', from: '', replyTo: '', 
                  subject: "[Jenkins] ${env.JOB_NAME} #${env.BUILD_NUMBER} - Failed", 
-                 to: 'tesemob395@certve.com'
+                 to: 'sewin21172@anysilo.com'
         }
     }
 }
